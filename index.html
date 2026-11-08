@@ -61,7 +61,7 @@ svg.i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .stages button b{font:800 12.5px var(--f-serif);color:var(--red)}
 .stages button[aria-current="true"]{background:rgba(255,255,255,.15);color:var(--ink)}
 .acts{margin-left:auto;display:flex;gap:8px}
-.ibtn{width:40px;height:40px;display:grid;place-items:center;border-radius:50%}
+.ibtn{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;color:var(--ink);text-decoration:none}
 .views{display:flex;padding:4px;border-radius:999px;gap:2px}
 .views button{padding:7px 13px;border-radius:999px;font-weight:650;font-size:13px;color:var(--ink-2)}
 .views button[aria-pressed="true"]{background:rgba(255,255,255,.16);color:var(--ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
@@ -273,6 +273,7 @@ svg.i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-widt
     <div class="brand glass"><span class="kj">日本</span><span class="bt">Japón en 3D</span></div>
     <nav class="stages glass" id="stages" aria-label="Etapas"></nav>
     <div class="acts">
+      <a class="ibtn glass" id="bMaps" href="mapas/" aria-label="Mapas ilustrados" title="Mapas ilustrados"><svg class="i" viewBox="0 0 24 24"><path d="M3 6.5l6-2.5 6 2.5 6-2.5v13.5l-6 2.5-6-2.5-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg></a>
       <button type="button" class="ibtn glass" id="bAll" aria-label="Ver el día entero" title="Ver el día entero"><svg class="i" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
       <div class="views glass" role="group" aria-label="Qué ver">
         <button type="button" data-view="3d" aria-pressed="false">3D</button>
@@ -642,6 +643,7 @@ function onDay(d){
   setDay3D(d);hi2D(d);
   if(sheetOpen())render();
   try{history.replaceState(null,'','#dia-'+d)}catch(e){}
+  $('#bMaps').href='mapas/#dia-'+d;
 }
 function intro(d){
   shownDay=d;const D=dayOf(d),I=infoOf(d);

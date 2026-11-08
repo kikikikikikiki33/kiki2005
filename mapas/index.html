@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ECEEF1">
+<title>Mapas del viaje a Japón</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap">
+<style>
+:root{
+  --bg:#ECEEF1;--ink:#15171C;--ink-2:#4B505C;--ink-3:#7D828E;--line:rgba(20,24,32,.09);
+  --glass:rgba(255,255,255,.72);--lime:#C8F23A;--lime-d:#8DBA06;--blue:#1638FF;--blue-2:#2A4BFF;
+  --f:'Figtree',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.45 var(--f);-webkit-font-smoothing:antialiased}
+body{min-height:100vh;background:radial-gradient(120% 70% at 50% 0%,#F6F7F9,#E7E9ED 70%)}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:10px}
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:inset 0 0 0 1px rgba(255,255,255,.8),0 10px 34px rgba(30,36,50,.10)}
+svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* cabecera */
+.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:12px;padding:12px max(16px,env(safe-area-inset-left));}
+.logo{white-space:nowrap;display:flex;align-items:center;gap:8px;font-weight:800;font-size:16px;text-decoration:none;padding:8px 14px;border-radius:999px}
+.logo b{color:#E0393E;font-family:'Hiragino Mincho ProN','Yu Mincho',serif}
+.seg{display:flex;gap:2px;padding:4px;border-radius:999px;margin:0 auto}
+.seg button{padding:8px 18px;border-radius:999px;font-weight:600;color:var(--ink-2);white-space:nowrap}
+.seg button[aria-current="true"]{background:var(--ink);color:#fff}
+.go3d{display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;font-weight:700;text-decoration:none;white-space:nowrap}
+@media (max-width:640px){.logo span{display:none}.seg button{padding:8px 12px;font-size:14px}.go3d span{display:none}.go3d{padding:9px 11px}}
+
+/* vista de mapa */
+.view{position:relative;max-width:1720px;margin:0 auto;padding:0 16px 28px}
+.hero{position:relative;z-index:5;padding:6px 8px 0;max-width:520px}
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:13.5px;color:var(--ink-3);margin-bottom:6px}
+.crumbs button{color:var(--ink-2);font-weight:600}.crumbs button:hover{color:var(--ink)}
+.hero h1{margin:0;font-weight:700;font-size:clamp(28px,4vw,46px);line-height:1.05;letter-spacing:-.02em;display:flex;align-items:center;gap:14px}
+.hero h1::before{content:"";width:5px;align-self:stretch;border-radius:3px;background:var(--lime)}
+.hero p{margin:8px 0 0 19px;color:var(--ink-2);font-size:16px}
+.stage{position:relative;margin-top:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;border-radius:20px}
+.stage::-webkit-scrollbar{display:none}
+.frame{position:relative;width:100%;margin:0 auto;aspect-ratio:1672/941}
+.frame img.map{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;-webkit-mask-image:radial-gradient(ellipse 70% 68% at 50% 50%,#000 68%,transparent 100%);mask-image:radial-gradient(ellipse 70% 68% at 50% 50%,#000 68%,transparent 100%);user-select:none;-webkit-user-drag:none;transition:opacity .35s}
+.frame img.map.loading{opacity:.35}
+.frame svg.route{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.route path.glow{stroke:var(--lime);stroke-width:12;opacity:.35;filter:blur(3px)}
+.route path.under{stroke:#fff;stroke-width:7}
+.route path.line{stroke:var(--lime);stroke-width:4;stroke-dasharray:1 0}
+.route path{fill:none;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.route path.line.draw{animation:draw 1.6s ease forwards}
+@keyframes draw{from{stroke-dashoffset:var(--len)}to{stroke-dashoffset:0}}
+.pins{position:absolute;inset:0}
+.pin{position:absolute;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--ink);font-weight:800;font-size:14px;box-shadow:0 0 0 4px var(--lime),0 6px 16px rgba(0,0,0,.25);transition:transform .2s}
+.pin:hover{transform:translate(-50%,-50%) scale(1.1)}
+.pin[aria-pressed="true"]{background:var(--ink);color:#fff;transform:translate(-50%,-50%) scale(1.18)}
+.pin .lb{position:absolute;left:50%;top:calc(100% + 8px);transform:translateX(-50%);white-space:nowrap;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.92);color:var(--ink);font-size:12.5px;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.12);pointer-events:none}
+.bub{position:absolute;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;gap:6px}
+.bub span{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;background:rgba(40,44,52,.72);color:#fff;font-weight:600;font-size:15px;white-space:nowrap;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25),0 6px 16px rgba(0,0,0,.2);transition:background .2s}
+.bub i{width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px var(--lime),0 4px 10px rgba(0,0,0,.25)}
+.bub:hover span,.bub[aria-pressed="true"] span{background:var(--ink)}
+.bub[aria-pressed="true"] i{background:var(--lime);box-shadow:0 0 0 4px #fff,0 4px 10px rgba(0,0,0,.25)}
+
+/* paneles */
+.itin{position:relative;z-index:6;margin-top:14px;overflow:auto;border-radius:24px;padding:18px 14px 14px;scrollbar-width:thin}
+.itin h2,.card h2{margin:0;font-weight:700}
+.itin h2{font-size:20px;display:flex;align-items:center;justify-content:space-between;padding:0 6px 10px}
+.itin ol{list-style:none;margin:0;padding:0;position:relative}
+.itin ol::before{content:"";position:absolute;left:17px;top:18px;bottom:18px;width:2px;background:var(--line)}
+.it{position:relative;display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;width:100%;padding:8px 6px;border-radius:16px}
+.it:hover,.it[aria-pressed="true"]{background:rgba(255,255,255,.75)}
+.it .dt{position:relative;z-index:1;width:14px;height:14px;margin-left:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 4px rgba(200,242,58,.3)}
+.it b{display:block;font-weight:600;font-size:14.5px;line-height:1.25}
+.it small{display:block;color:var(--ink-3);font-size:12.5px}
+.it img{width:56px;height:42px;border-radius:10px;object-fit:cover}
+.card{position:relative;z-index:6;margin-top:14px;border-radius:26px;overflow:hidden;background:#fff;box-shadow:0 16px 44px rgba(30,36,50,.18)}
+.card .ph{position:relative;height:250px;background:#dde1e6}
+.card .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.card .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45),transparent 42%)}
+.card .ph h2{position:absolute;z-index:1;left:20px;right:20px;top:16px;color:#fff;font-size:26px;line-height:1.1;text-shadow:0 2px 12px rgba(0,0,0,.3)}
+.card .ph .k{position:absolute;z-index:1;left:20px;top:auto;bottom:14px;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.88);font-size:12.5px;font-weight:700}
+.blue{background:var(--blue);color:#fff;padding:18px 20px 20px}
+.blue .t{display:flex;align-items:center;gap:10px;font-weight:600;font-size:17px}
+.blue p{margin:8px 0 0;color:rgba(255,255,255,.86);font-size:14px}
+.stats{display:flex;gap:16px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.2)}
+.stats div{display:flex;align-items:center;gap:8px;font-size:15px}
+.stats div+div{padding-left:16px;border-left:1px solid rgba(255,255,255,.25)}
+.cta{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:16px;padding:13px;border-radius:999px;background:#fff;color:var(--blue);font-weight:700;font-size:16px;text-decoration:none}
+.cta+.cta{margin-top:8px;background:rgba(255,255,255,.14);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.kids{position:relative;z-index:6;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.kid{display:flex;align-items:center;gap:14px;padding:8px 14px 8px 8px;border-radius:22px;min-height:96px;text-align:left}
+.kid img{width:120px;height:76px;border-radius:16px;object-fit:cover;flex:none}
+.kid b{display:block;font-weight:600;font-size:17px;line-height:1.2}
+.kid small{display:block;color:var(--ink-3);font-size:13px;margin-top:2px}
+.kid .ch{margin-left:auto;width:32px;height:32px;flex:none;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.kid:hover .ch{background:var(--lime)}
+.kidsh{margin:26px 4px 10px;font-weight:700;font-size:18px;position:relative;z-index:6}
+
+/* galerías */
+.gal{max-width:1400px;margin:0 auto;padding:8px 16px 40px}
+.gal h1{margin:10px 4px 4px;font-size:clamp(28px,4vw,42px);letter-spacing:-.02em}
+.gal>p{margin:0 4px 18px;color:var(--ink-2)}
+.gal h3{margin:26px 4px 10px;font-size:18px;display:flex;gap:10px;align-items:baseline}
+.gal h3 small{color:var(--ink-3);font-weight:500;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.gc{border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 8px 26px rgba(30,36,50,.08);text-align:left;transition:transform .2s}
+.gc:hover{transform:translateY(-3px)}
+.gc img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#dde1e6}
+.gc div{padding:12px 16px 14px}
+.gc b{display:block;font-size:17px;font-weight:650}
+.gc small{color:var(--ink-3);font-size:13px}
+
+@media (min-width:1181px){
+  .view{display:grid;grid-template-columns:290px minmax(0,1fr) 330px;column-gap:20px;align-items:start;max-width:min(1720px,calc((100vh - 230px)/0.664 + 680px))}
+  .hero{grid-column:1/-1;max-width:none}
+  .stage{grid-column:2;grid-row:2;overflow:visible;margin-top:0}
+  .frame{width:118%;margin-left:-9%}
+  .panels{display:contents}
+  .itin{grid-column:1;grid-row:2;margin-top:10px;max-height:calc((100vw - 680px)*.664)}
+  .card{grid-column:3;grid-row:2;margin-top:10px}
+  .kidsh,.kids,.hint{grid-column:1/-1}
+}
+@media (max-width:1180px){.panels{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}.panels .card{order:-1}}
+@media (max-width:760px){
+  .frame{width:175%}
+  .panels{grid-template-columns:1fr}
+  .card .ph{height:200px}
+  .pin{width:30px;height:30px;font-size:13px}
+  .pin .lb{display:none}
+  .bub span{font-size:13px;padding:6px 11px}
+  .kid img{width:110px;height:66px}
+  .hint{display:block}
+}
+.hint{display:none;text-align:center;color:var(--ink-3);font-size:12.5px;margin-top:6px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="logo glass" href="#V01"><b>日本</b><span>Japón</span></a>
+  <nav class="seg glass" aria-label="Qué ver">
+    <button type="button" data-go="V01" data-tab="mapa">Mapa</button>
+    <button type="button" data-go="ciudades" data-tab="ciudades">Ciudades</button>
+    <button type="button" data-go="barrios" data-tab="barrios">Barrios</button>
+  </nav>
+  <a class="go3d glass" href="../" id="go3d"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg><span>Ruta en 3D</span></a>
+</header>
+<main id="app"></main>
+<script>const DATA={"maps":{"V01":{"n":"Japón","s":"Toda la ruta: 20 dic – 11 ene","p":null,"xy":null},"C01":{"n":"Tokio","s":"Barrios de los días 1–4 y 19–23","p":"V01","xy":[86,44]},"C02":{"n":"Kamakura y Enoshima","s":"Excursión del día 4","p":"V01","xy":[85,56]},"C03":{"n":"Alpes japoneses","s":"Kanazawa, Shirakawa-go y Takayama","p":"V01","xy":[59,30]},"C04":{"n":"Osaka","s":"Base del 27 al 31 de diciembre","p":"V01","xy":[43,52]},"C05":{"n":"Koyasan","s":"El monte de los templos, día 10","p":"V01","xy":[46,63]},"C06":{"n":"Hiroshima y Miyajima","s":"1 y 2 de enero","p":"V01","xy":[14,52]},"C07":{"n":"Kioto","s":"Base del 3 al 6 de enero","p":"V01","xy":[50,43]},"C08":{"n":"Nara","s":"Excursión del día 17","p":"V01","xy":[53,51]},"C09":{"n":"Himeji","s":"Parada del día 15","p":"V01","xy":[36,49]},"B01":{"n":"Ueno y Asakusa","s":"Donde dormís en Tokio","p":"C01","xy":[55,14]},"B02":{"n":"Shinjuku","s":"Neones y Kabukicho","p":"C01","xy":[24,33]},"B03":{"n":"Harajuku, Omotesando y Shibuya","s":"Moda y el cruce","p":"C01","xy":[24,50]},"B04":{"n":"Odaiba","s":"Isla en la bahía","p":"C01","xy":[66,83]},"B05":{"n":"Akihabara y Kanda","s":"Anime y santuario","p":"C01","xy":[52,28]},"B06":{"n":"Tsukiji, Ginza y Palacio","s":"Mercado y compras","p":"C01","xy":[50,44]},"B07":{"n":"Shimokitazawa, Nakano e Ikebukuro","s":"Vintage y anime","p":"C01","xy":[14,25]},"B08":{"n":"Ryogoku","s":"El barrio del sumo","p":"C01","xy":[64,38]},"B09":{"n":"Kamakura","s":"El Gran Buda","p":"C02","xy":[58,34]},"B10":{"n":"Enoshima","s":"La isla","p":"C02","xy":[19,72]},"B11":{"n":"Kanazawa","s":"Jardín, castillo y geishas","p":"C03","xy":[35,24]},"B12":{"n":"Shirakawa-go","s":"Casas bajo la nieve","p":"C03","xy":[47,47]},"B13":{"n":"Takayama","s":"Casco antiguo","p":"C03","xy":[68,70]},"B14":{"n":"Namba y Dotonbori","s":"Donde dormís en Osaka","p":"C04","xy":[28,62]},"B15":{"n":"Castillo de Osaka","s":"Historia","p":"C04","xy":[68,42]},"B16":{"n":"Shinsekai y Den Den Town","s":"Retro y anime","p":"C04","xy":[45,70]},"B17":{"n":"Umeda y Tenjinbashisuji","s":"Rascacielos y galería","p":"C04","xy":[45,22]},"B18":{"n":"Okunoin","s":"El cementerio del bosque","p":"C05","xy":[30,66]},"B19":{"n":"Parque de la Paz","s":"Memoria","p":"C06","xy":[65,36]},"B20":{"n":"Miyajima","s":"Torii y monte Misen","p":"C06","xy":[35,70]},"B21":{"n":"Fushimi Inari","s":"Miles de torii","p":"C07","xy":[76,76]},"B22":{"n":"Higashiyama y Gion","s":"Kioto clásico","p":"C07","xy":[78,50]},"B23":{"n":"Arashiyama","s":"Bambú y monos","p":"C07","xy":[18,46]},"B24":{"n":"Kinkaku-ji y Nijo","s":"Oro y castillo","p":"C07","xy":[36,30]},"B25":{"n":"Parque de Nara","s":"Ciervos y Todai-ji","p":"C08","xy":[55,40]},"B26":{"n":"Castillo de Himeji","s":"El castillo blanco","p":"C09","xy":[55,33]}},"stops":[{"d":1,"k":0,"date":"20 dic","n":"Aeropuerto de Narita","note":"Llegáis por la terminal 1.","img":"","m":null,"x":null,"y":null,"t":"14:00","via":[]},{"d":1,"k":1,"date":"20 dic","n":"Ueno","note":"Tren Keisei directo desde el aeropuerto.","img":"","m":"B01","x":37,"y":55,"t":"","via":[]},{"d":1,"k":2,"date":"20 dic","n":"Shinjuku · Kabukicho","note":"Las luces de Kabukicho de noche.","img":"shinjuku","m":"B02","x":60,"y":25,"t":"","via":[]},{"d":2,"k":0,"date":"21 dic","n":"Ueno","note":"","img":"","m":"B01","x":37,"y":55,"t":"","via":[]},{"d":2,"k":1,"date":"21 dic","n":"Takeshita, Harajuku","note":"La calle de la moda kawaii.","img":"harajuku","m":"B03","x":52,"y":30,"t":"10:15","via":[]},{"d":2,"k":2,"date":"21 dic","n":"Omotesando","note":"Avenida de tiendas y arquitectura.","img":"","m":"B03","x":68,"y":45,"t":"","via":[]},{"d":2,"k":3,"date":"21 dic","n":"Cruce de Shibuya","note":"El cruce más famoso del mundo.","img":"shibuya","m":"B03","x":48,"y":83,"t":"19:00","via":[]},{"d":3,"k":0,"date":"22 dic","n":"Ueno","note":"","img":"","m":"B01","x":37,"y":55,"t":"","via":[]},{"d":3,"k":1,"date":"22 dic","n":"Senso-ji, Asakusa","note":"El templo más antiguo de Tokio.","img":"asakusa","m":"B01","x":65,"y":36,"t":"8:00","via":[]},{"d":3,"k":2,"date":"22 dic","n":"Parque de Ueno","note":"","img":"","m":"B01","x":24,"y":42,"t":"","via":[]},{"d":3,"k":3,"date":"22 dic","n":"Odaiba","note":"Gundam gigante y la bahía.","img":"","m":"B04","x":60,"y":60,"t":"17:30","via":[]},{"d":3,"k":4,"date":"22 dic","n":"Shinbashi","note":"Izakayas bajo las vías.","img":"","m":"C01","x":53,"y":56,"t":"19:30","via":[]},{"d":4,"k":0,"date":"23 dic","n":"Ueno","note":"Salís con las mochilas.","img":"","m":"B01","x":37,"y":55,"t":"","via":[]},{"d":4,"k":1,"date":"23 dic","n":"Shinjuku","note":"Dejáis las mochilas en taquillas.","img":"","m":"B02","x":48,"y":48,"t":"","via":[]},{"d":4,"k":2,"date":"23 dic","n":"Gran Buda de Kamakura","note":"Buda de bronce de 11 m al aire libre.","img":"kamakura","m":"B09","x":30,"y":28,"t":"10:40","via":[]},{"d":4,"k":3,"date":"23 dic","n":"Templo Hase-dera","note":"Terraza con vistas a la bahía.","img":"","m":"B09","x":24,"y":55,"t":"11:20","via":[]},{"d":4,"k":4,"date":"23 dic","n":"Enoshima","note":"Santuarios y cuevas en la isla.","img":"enoshima","m":"B10","x":52,"y":50,"t":"14:10","via":[]},{"d":4,"k":5,"date":"23 dic","n":"Shinjuku","note":"Ducha y a por el bus.","img":"","m":"B02","x":48,"y":48,"t":"","via":[]},{"d":4,"k":6,"date":"23 dic","n":"Kanazawa","note":"Dormís en el bus.","img":"","m":null,"x":null,"y":null,"t":"","via":[]},{"d":5,"k":0,"date":"24 dic","n":"Estación de Kanazawa","note":"La puerta de madera Tsuzumi-mon.","img":"","m":"B11","x":20,"y":45,"t":"8:05","via":[]},{"d":5,"k":1,"date":"24 dic","n":"Jardín Kenrokuen","note":"Uno de los tres jardines más bonitos de Japón.","img":"kenrokuen","m":"B11","x":60,"y":75,"t":"8:45","via":[]},{"d":5,"k":2,"date":"24 dic","n":"Castillo de Kanazawa","note":"","img":"","m":"B11","x":52,"y":47,"t":"","via":[]},{"d":5,"k":3,"date":"24 dic","n":"Mercado Omicho","note":"Marisco fresco.","img":"","m":"B11","x":32,"y":31,"t":"12:45","via":[]},{"d":5,"k":4,"date":"24 dic","n":"Higashi Chaya","note":"El barrio de las geishas.","img":"chaya","m":"B11","x":72,"y":33,"t":"15:15","via":[]},{"d":6,"k":0,"date":"25 dic","n":"Kanazawa","note":"","img":"","m":"B11","x":20,"y":45,"t":"","via":[]},{"d":6,"k":1,"date":"25 dic","n":"Shirakawa-go","note":"Casas de tejado de paja bajo la nieve.","img":"shirakawa","m":"B12","x":55,"y":47,"t":"9:10","via":[]},{"d":6,"k":2,"date":"25 dic","n":"Takayama Jinya","note":"Antigua oficina del gobierno.","img":"takayama","m":"B13","x":34,"y":64,"t":"14:45","via":[]},{"d":7,"k":0,"date":"26 dic","n":"Casco antiguo de Takayama","note":"Calles de madera, sake y mercados.","img":"takayama","m":"B13","x":62,"y":40,"t":"","via":[]},{"d":7,"k":1,"date":"26 dic","n":"Ternera de Hida","note":"Brocheta de ternera de Hida.","img":"hida","m":"B13","x":72,"y":58,"t":"11:15","via":[]},{"d":7,"k":2,"date":"26 dic","n":"Namba, Osaka","note":"Llegada a Osaka.","img":"","m":"B14","x":55,"y":76,"t":"","via":[]},{"d":8,"k":0,"date":"27 dic","n":"Castillo de Osaka","note":"","img":"osakajo","m":"B15","x":53,"y":36,"t":"9:00","via":[]},{"d":8,"k":1,"date":"27 dic","n":"Shinsaibashi","note":"La calle cubierta de compras.","img":"glico","m":"B14","x":51,"y":22,"t":"","via":[]},{"d":8,"k":2,"date":"27 dic","n":"Amerikamura","note":"Ropa vintage y ambiente joven.","img":"amerika","m":"B14","x":25,"y":30,"t":"","via":[]},{"d":8,"k":3,"date":"27 dic","n":"Dotonbori","note":"El cartel de Glico y comida callejera.","img":"","m":"B14","x":60,"y":52,"t":"","via":[]},{"d":9,"k":0,"date":"28 dic","n":"Shitennoji","note":"El templo budista oficial más antiguo de Japón.","img":"","m":"B16","x":60,"y":40,"t":"10:00","via":[]},{"d":9,"k":1,"date":"28 dic","n":"Shinsekai · Tsutenkaku","note":"Barrio retro y kushikatsu.","img":"shinsekai","m":"B16","x":34,"y":52,"t":"11:15","via":[]},{"d":9,"k":2,"date":"28 dic","n":"Den Den Town","note":"Anime, figuras y videojuegos.","img":"denden","m":"B16","x":38,"y":25,"t":"","via":[]},{"d":10,"k":0,"date":"29 dic","n":"Namba","note":"","img":"","m":"B14","x":55,"y":76,"t":"19:00","via":[]},{"d":10,"k":1,"date":"29 dic","n":"Okunoin, Koyasan","note":"Cementerio entre cedros gigantes.","img":"koyasan","m":"B18","x":62,"y":28,"t":"12:35","via":[]},{"d":10,"k":2,"date":"29 dic","n":"Kongobuji","note":"","img":"","m":"C05","x":46,"y":37,"t":"13:30","via":[]},{"d":10,"k":3,"date":"29 dic","n":"Danjo Garan","note":"","img":"","m":"C05","x":58,"y":41,"t":"14:30","via":[]},{"d":10,"k":4,"date":"29 dic","n":"Namba","note":"","img":"","m":"B14","x":55,"y":76,"t":"19:00","via":[]},{"d":11,"k":0,"date":"30 dic","n":"Tenjinbashisuji","note":"La calle comercial más larga de Japón.","img":"","m":"B17","x":72,"y":45,"t":"","via":[]},{"d":11,"k":1,"date":"30 dic","n":"Umeda Sky Building","note":"Mirador al atardecer.","img":"","m":"B17","x":27,"y":30,"t":"16:15","via":[]},{"d":11,"k":2,"date":"30 dic","n":"Namba","note":"","img":"","m":"B14","x":55,"y":76,"t":"","via":[]},{"d":12,"k":0,"date":"31 dic","n":"Namba Yasaka","note":"El santuario de la cabeza de león.","img":"","m":"B14","x":30,"y":70,"t":"","via":[]},{"d":12,"k":1,"date":"31 dic","n":"Dotonbori","note":"Campanadas, karaoke y la última noche del año.","img":"glico","m":"B14","x":60,"y":52,"t":"","via":[]},{"d":13,"k":0,"date":"1 ene","n":"Sumiyoshi Taisha","note":"Primera visita del año al santuario.","img":"","m":null,"x":null,"y":null,"t":"8:20","via":[]},{"d":13,"k":1,"date":"1 ene","n":"Shin-Osaka","note":"","img":"","m":null,"x":null,"y":null,"t":"","via":[]},{"d":13,"k":2,"date":"1 ene","n":"Hiroshima","note":"Tren bala con el pase JR.","img":"","m":"C06","x":78,"y":25,"t":"","via":[]},{"d":13,"k":3,"date":"1 ene","n":"Cúpula de la Bomba Atómica","note":"Tranvía hasta el parque de la Paz.","img":"dome","m":"B19","x":61,"y":30,"t":"","via":[]},{"d":13,"k":4,"date":"1 ene","n":"Museo de la Paz","note":"","img":"","m":"B19","x":47,"y":70,"t":"15:15","via":[]},{"d":14,"k":0,"date":"2 ene","n":"Hiroshima","note":"","img":"","m":"C06","x":78,"y":25,"t":"","via":[]},{"d":14,"k":1,"date":"2 ene","n":"Santuario de Itsukushima","note":"El torii en el agua.","img":"torii","m":"B20","x":38,"y":48,"t":"9:15","via":[]},{"d":14,"k":2,"date":"2 ene","n":"Monte Misen","note":"Vistas del mar interior.","img":"misen","m":"B20","x":83,"y":30,"t":"","via":[[55,60],[64,63],[75,47]]},{"d":14,"k":3,"date":"2 ene","n":"Hiroshima","note":"","img":"","m":"C06","x":78,"y":25,"t":"","via":[]},{"d":15,"k":0,"date":"3 ene","n":"Castillo de Himeji","note":"El castillo blanco.","img":"himeji","m":"B26","x":65,"y":26,"t":"9:50","via":[]},{"d":15,"k":1,"date":"3 ene","n":"Templo Mii-dera, Otsu","note":"Junto al lago Biwa.","img":"","m":null,"x":null,"y":null,"t":"15:05","via":[]},{"d":15,"k":2,"date":"3 ene","n":"Kioto","note":"Primera noche en Kioto.","img":"","m":"C07","x":49,"y":80,"t":"","via":[]},{"d":16,"k":0,"date":"4 ene","n":"Fushimi Inari","note":"Miles de torii naranjas.","img":"fushimi","m":"B21","x":28,"y":65,"t":"10:00","via":[]},{"d":16,"k":1,"date":"4 ene","n":"Kiyomizu-dera","note":"El templo de madera sobre la colina.","img":"kiyomizu","m":"B22","x":78,"y":66,"t":"11:30","via":[]},{"d":16,"k":2,"date":"4 ene","n":"Kennin-ji","note":"","img":"","m":"B22","x":31,"y":52,"t":"14:00","via":[]},{"d":16,"k":3,"date":"4 ene","n":"Gion","note":"El barrio de las geishas.","img":"gion","m":"B22","x":25,"y":28,"t":"","via":[]},{"d":17,"k":0,"date":"5 ene","n":"Kioto","note":"","img":"","m":"C07","x":49,"y":80,"t":"","via":[]},{"d":17,"k":1,"date":"5 ene","n":"Parque de Nara","note":"Ciervos sueltos por todas partes.","img":"nara","m":"B25","x":30,"y":52,"t":"","via":[]},{"d":17,"k":2,"date":"5 ene","n":"Todai-ji","note":"El Buda gigante dentro del edificio de madera.","img":"nara","m":"B25","x":52,"y":22,"t":"10:30","via":[]},{"d":17,"k":3,"date":"5 ene","n":"Kasuga Taisha","note":"Miles de faroles de piedra.","img":"","m":"B25","x":80,"y":57,"t":"","via":[]},{"d":17,"k":4,"date":"5 ene","n":"Kioto","note":"","img":"","m":"C07","x":49,"y":80,"t":"","via":[]},{"d":18,"k":0,"date":"6 ene","n":"Bosque de bambú, Arashiyama","note":"","img":"arashiyama","m":"B23","x":30,"y":33,"t":"7:45","via":[]},{"d":18,"k":1,"date":"6 ene","n":"Parque de los monos","note":"","img":"","m":"B23","x":25,"y":67,"t":"9:00","via":[]},{"d":18,"k":2,"date":"6 ene","n":"Kinkaku-ji","note":"El Pabellón Dorado.","img":"kinkaku","m":"B24","x":26,"y":30,"t":"11:45","via":[]},{"d":18,"k":3,"date":"6 ene","n":"Castillo de Nijo","note":"","img":"","m":"B24","x":72,"y":72,"t":"13:45","via":[]},{"d":18,"k":4,"date":"6 ene","n":"Kioto","note":"Ducha y bus nocturno.","img":"","m":"C07","x":49,"y":80,"t":"","via":[]},{"d":18,"k":5,"date":"6 ene","n":"Tokio","note":"Dormís en el bus.","img":"","m":null,"x":null,"y":null,"t":"","via":[]},{"d":19,"k":0,"date":"7 ene","n":"Estación de Tokio","note":"","img":"","m":"C01","x":52,"y":40,"t":"6:30","via":[]},{"d":19,"k":1,"date":"7 ene","n":"Mercado de Tsukiji","note":"Tamagoyaki y atún de desayuno.","img":"tsukiji","m":"B06","x":80,"y":75,"t":"8:15","via":[]},{"d":19,"k":2,"date":"7 ene","n":"Palacio Imperial","note":"","img":"","m":"B06","x":23,"y":36,"t":"","via":[]},{"d":19,"k":3,"date":"7 ene","n":"Ginza","note":"La avenida de las grandes tiendas.","img":"ginza","m":"B06","x":66,"y":40,"t":"","via":[]},{"d":20,"k":0,"date":"8 ene","n":"Museo Nacional de Tokio","note":"","img":"","m":"B01","x":27,"y":26,"t":"9:30","via":[]},{"d":20,"k":1,"date":"8 ene","n":"Kanda Myojin","note":"El santuario de Akihabara.","img":"kanda","m":"B05","x":33,"y":22,"t":"","via":[]},{"d":20,"k":2,"date":"8 ene","n":"Akihabara","note":"Anime, recreativas y tecnología.","img":"akihabara","m":"B05","x":70,"y":50,"t":"","via":[]},{"d":21,"k":0,"date":"9 ene","n":"Shimokitazawa","note":"Ropa vintage.","img":"shimokita","m":"B07","x":28,"y":74,"t":"11:00","via":[]},{"d":21,"k":1,"date":"9 ene","n":"Nakano Broadway","note":"Coleccionismo de anime.","img":"nakano","m":"B07","x":31,"y":46,"t":"14:15","via":[]},{"d":21,"k":2,"date":"9 ene","n":"Ikebukuro","note":"","img":"","m":"B07","x":73,"y":25,"t":"","via":[]},{"d":22,"k":0,"date":"10 ene","n":"Ryogoku Kokugikan","note":"Sumo en directo y museo Edo-Tokio.","img":"sumo","m":"B08","x":44,"y":40,"t":"12:00","via":[]},{"d":22,"k":1,"date":"10 ene","n":"Shibuya","note":"La última noche.","img":"shibuya","m":"B03","x":48,"y":83,"t":"19:00","via":[]},{"d":23,"k":0,"date":"11 ene","n":"Ueno","note":"Últimas compras.","img":"","m":"B01","x":37,"y":55,"t":"","via":[]},{"d":23,"k":1,"date":"11 ene","n":"Aeropuerto de Narita","note":"Vuelo de vuelta.","img":"","m":null,"x":null,"y":null,"t":"","via":[]}],"days":{"1":{"date":"20 dic","t":"Llegada, Ueno y Shinjuku de noche","wd":"Domingo"},"2":{"date":"21 dic","t":"Harajuku, Omotesando y Shibuya","wd":"Lunes"},"3":{"date":"22 dic","t":"Asakusa, Ueno, Odaiba y Shinbashi","wd":"Martes"},"4":{"date":"23 dic","t":"Kamakura, Enoshima y bus nocturno a Kanazawa","wd":"Miércoles"},"5":{"date":"24 dic","t":"Kanazawa","wd":"Jueves"},"6":{"date":"25 dic","t":"Shirakawa-go y Takayama","wd":"Viernes"},"7":{"date":"26 dic","t":"Takayama y bus a Osaka","wd":"Sábado"},"8":{"date":"27 dic","t":"Castillo, Shinsaibashi y Amerikamura","wd":"Domingo"},"9":{"date":"28 dic","t":"Shitennoji, Shinsekai y Den Den Town","wd":"Lunes"},"10":{"date":"29 dic","t":"Koyasan: el bosque de los templos","wd":"Martes"},"11":{"date":"30 dic","t":"Tenjinbashisuji, pase JR y Umeda","wd":"Miércoles"},"12":{"date":"31 dic","t":"Nochevieja en Osaka","wd":"Jueves"},"13":{"date":"1 ene","t":"Sumiyoshi y tren bala a Hiroshima","wd":"Viernes"},"14":{"date":"2 ene","t":"Miyajima y monte Misen","wd":"Sábado"},"15":{"date":"3 ene","t":"Himeji, Otsu y Kioto","wd":"Domingo"},"16":{"date":"4 ene","t":"Fushimi Inari, Kiyomizu y Gion","wd":"Lunes"},"17":{"date":"5 ene","t":"Nara","wd":"Martes"},"18":{"date":"6 ene","t":"Arashiyama, Kinkaku-ji, Nijo y bus nocturno","wd":"Miércoles"},"19":{"date":"7 ene","t":"Tsukiji, Palacio Imperial y Ginza","wd":"Jueves"},"20":{"date":"8 ene","t":"Museo Nacional, Kanda Myojin y Akihabara","wd":"Viernes"},"21":{"date":"9 ene","t":"Shimokitazawa, Nakano e Ikebukuro","wd":"Sábado"},"22":{"date":"10 ene","t":"Ryogoku, sumo y última noche","wd":"Domingo"},"23":{"date":"11 ene","t":"Vuelta a casa","wd":"Lunes"}},"vroute":[[86,44],[85,56],[86,44],[54,24],[59,30],[64,36],[43,52],[46,63],[43,52],[14,52],[36,49],[50,43],[53,51],[50,43],[86,44]]};</script>
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const M=DATA.maps,S=DATA.stops,DAYS=DATA.days;
+const kids=id=>Object.keys(M).filter(k=>M[k].p===id);
+const desc=id=>{const out=[id];kids(id).forEach(k=>out.push(...desc(k)));return out};
+const stopsIn=id=>{const set=new Set(desc(id));return S.filter(s=>s.m&&set.has(s.m))};
+const daysIn=id=>[...new Set(stopsIn(id).map(s=>s.d))].sort((a,b)=>a-b);
+const dayTxt=ds=>!ds.length?'':ds.length===1?'Día '+ds[0]:(ds[ds.length-1]-ds[0]===ds.length-1?'Días '+ds[0]+'–'+ds[ds.length-1]:'Días '+ds.join(', '));
+const dateTxt=ds=>!ds.length?'':ds.length===1?DAYS[ds[0]].date:DAYS[ds[0]].date+' – '+DAYS[ds[ds.length-1]].date;
+const IC={
+ pin:'<path d="M12 21s-6.5-5.7-6.5-11A6.5 6.5 0 0 1 18.5 10c0 5.3-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/>',
+ cal:'<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+ route:'<circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="7" cy="7" r="2"/><path d="M8.5 8.5l7.5 7.5M8 18h6.5"/>',
+ arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',chev:'<path d="M9 6l6 6-6 6"/>',
+ torii:'<path d="M3 5c4 1 14 1 18 0M5 8.5h14M7 5.5V21M17 5.5V21M12 8.5V12"/>',
+ cube:'<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/>'
+};
+const ic=k=>`<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${IC[k]}</svg>`;
+const big=id=>'img/'+id+'.webp', th=id=>'th/'+id+'.webp', foto=k=>'fotos/'+k+'.webp';
+
+/* lugares de un mapa: paradas en el mismo punto se juntan */
+function places(id){
+  const out=[];
+  S.forEach((s,i)=>{if(s.m!==id)return;
+    let p=out.find(q=>Math.abs(q.x-s.x)<1.2&&Math.abs(q.y-s.y)<1.2);
+    if(!p){p={x:s.x,y:s.y,n:s.n,img:s.img,note:s.note,visits:[]};out.push(p)}
+    if(!p.img&&s.img)p.img=s.img;if(!p.note&&s.note)p.note=s.note;
+    p.visits.push(s)});
+  return out;
+}
+/* curva suave por puntos (Catmull-Rom) */
+function curve(pts){
+  if(pts.length<2)return '';
+  let d=`M${pts[0][0]},${pts[0][1]}`;
+  for(let i=0;i<pts.length-1;i++){
+    const p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2;
+    d+=` C${p1[0]+(p2[0]-p0[0])/6},${p1[1]+(p2[1]-p0[1])/6} ${p2[0]-(p3[0]-p1[0])/6},${p2[1]-(p3[1]-p1[1])/6} ${p2[0]},${p2[1]}`;
+  }
+  return d;
+}
+function routes(id){
+  if(id==='V01')return [DATA.vroute];
+  if(id[0]!=='B')return [];
+  const segs=[];let cur=null;
+  for(let i=0;i<S.length;i++){
+    const s=S[i],pv=S[i-1];
+    if(s.m===id&&pv&&pv.m===id&&pv.d===s.d&&(pv.x!==s.x||pv.y!==s.y)){
+      const pts=[[pv.x,pv.y],...s.via,[s.x,s.y]];
+      if(cur&&cur.end===i-1){cur.pts.push(...pts.slice(1))}else{cur={pts};segs.push(cur)}
+      cur.end=i;
+    }
+  }
+  return segs.map(c=>c.pts);
+}
+
+let SEL=null;
+function mapView(id){
+  const m=M[id];if(!m)return mapView('V01');
+  const chain=[];for(let k=id;k;k=M[k].p)chain.unshift(k);
+  const ks=kids(id),pl=places(id),ds=daysIn(id),ns=stopsIn(id).length;
+  const sib=m.p&&id[0]==='B'?kids(m.p).filter(k=>k!==id):[];
+  const rs=routes(id);
+  const sx=v=>v,sy=v=>v;
+  const routeSvg=rs.map(r=>{const p=r.map(q=>[sx(q[0]),sy(q[1])]),d=curve(p);return `<path class="glow" d="${d}"/><path class="under" d="${d}"/><path class="line" d="${d}"/>`}).join('');
+  let n=0;
+  const pinH=pl.map((p,i)=>{n++;const v=p.visits;return `<button type="button" class="pin" style="left:${p.x}%;top:${p.y}%" data-sel="p${i}" aria-label="${esc(p.n)}, ${esc(dayTxt([...new Set(v.map(s=>s.d))]))}">${n}<span class="lb">${esc(p.n)}</span></button>`}).join('');
+  const bubH=ks.map(k=>{const xy=M[k].xy;return `<button type="button" class="bub" style="left:${xy[0]}%;top:${xy[1]}%" data-go="${k}" data-sel="k${k}"><span>${esc(M[k].n)}</span><i></i></button>`}).join('');
+  // itinerario
+  let rows='';
+  if(pl.length){pl.forEach((p,i)=>{const v=p.visits,d0=v[0];rows+=`<li><button type="button" class="it" data-sel="p${i}"><span class="dt"></span><span><b>${d0.t?esc(d0.t)+' · ':''}${esc(p.n)}</b><small>${esc(dayTxt([...new Set(v.map(s=>s.d))]))} · ${esc(DAYS[d0.d].date)}${v.length>1?' · '+v.length+' veces':''}</small></span>${p.img?`<img src="${foto(p.img)}" alt="" loading="lazy">`:''}</button></li>`})}
+  ks.forEach(k=>{const kd=daysIn(k);rows+=`<li><button type="button" class="it" data-go="${k}" data-sel="k${k}"><span class="dt"></span><span><b>${esc(M[k].n)}</b><small>${esc(dayTxt(kd))}${kd.length?' · '+esc(dateTxt(kd)):''}</small></span><img src="${th(k)}" alt="" loading="lazy"></button></li>`});
+  const list=[...ks.map(k=>({k})),...(sib.length?sib.map(k=>({k})):[])];
+  const kidsList=(ks.length?ks:sib);
+  const kidsTitle=ks.length?(id==='V01'?'Las etapas':'Los barrios'):'Otros barrios de '+M[m.p].n;
+  return `<section class="view">
+   <div class="hero"><nav class="crumbs" aria-label="Dónde estás">${chain.map((k,i)=>i<chain.length-1?`<button type="button" data-go="${k}">${esc(M[k].n)}</button>${ic('chev')}`:'').join('')}</nav>
+    <h1>${esc(m.n)}</h1><p>${esc(m.s)}</p></div>
+   <div class="stage" id="stage"><div class="frame">
+     <img class="map loading" src="${big(id)}" alt="Mapa ilustrado: ${esc(m.n)}" onload="this.classList.remove('loading')">
+     <svg class="route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${routeSvg}</svg>
+     <div class="pins">${bubH}${pinH}</div>
+   </div></div>
+   <p class="hint">Desliza el mapa hacia los lados · toca un número</p>
+   <div class="panels">
+     ${rows?`<aside class="itin glass"><h2>${id==='V01'?'Tu viaje':'Tu itinerario'}<span title="${esc(dateTxt(ds))}">${ic('cal')}</span></h2><ol>${rows}</ol></aside>`:''}
+     <aside class="card" id="card" aria-live="polite"></aside>
+   </div>
+   ${kidsList.length?`<h2 class="kidsh">${esc(kidsTitle)}</h2><div class="kids">${kidsList.map(k=>{const kd=daysIn(k);return `<button type="button" class="kid glass" data-go="${k}"><img src="${th(k)}" alt="" loading="lazy"><span><b>${esc(M[k].n)}</b><small>${esc(dayTxt(kd)||M[k].s)}</small></span><span class="ch">${ic('chev')}</span></button>`}).join('')}</div>`:''}
+  </section>`;
+}
+function cardFor(id,sel){
+  const m=M[id],pl=places(id);
+  let ph,title,k,txt,ds,ns,btns='';
+  if(sel&&sel[0]==='p'){
+    const p=pl[+sel.slice(1)];ds=[...new Set(p.visits.map(s=>s.d))];
+    ph=p.img?foto(p.img):th(id);title=p.n;k=p.visits[0].t?p.visits[0].t+' · '+DAYS[ds[0]].date:DAYS[ds[0]].date;
+    txt=p.note||DAYS[ds[0]].t;
+    btns=ds.slice(0,2).map((d,i)=>`<a class="cta" href="../#dia-${d}">${i?'':''}Ver el día ${d} en 3D ${ic('arrow')}</a>`).join('');
+    return render(ph,title,k,'torii',DAYS[ds[0]].t,txt,[[ic('cal'),dayTxt(ds)],[ic('pin'),p.visits.length>1?p.visits.length+' visitas':'1 visita']],btns);
+  }
+  const kk=sel&&sel[0]==='k'?sel.slice(1):null;
+  const tgt=kk||id;ds=daysIn(tgt);ns=new Set(stopsIn(tgt).map(s=>s.n)).size;
+  ph=th(tgt);title=M[tgt].n;k=dateTxt(ds);txt=M[tgt].s;
+  if(kk)btns=`<button type="button" class="cta" data-go="${kk}">Abrir el mapa ${ic('arrow')}</button>`;
+  if(ds.length)btns+=`<a class="cta" href="../#dia-${ds[0]}">Ver en 3D ${ic('cube')}</a>`;
+  return render(ph,title,k,'route',kk?'Mapa de '+M[kk].n:(id==='V01'?'Ruta del viaje':'Ruta por '+m.n),txt,[[ic('route'),ns+' parada'+(ns===1?'':'s')],[ic('cal'),ds.length+' día'+(ds.length===1?'':'s')]],btns);
+  function render(ph,title,k,ico,head,txt,stats,btns){
+    return `<div class="ph"><img src="${ph}" alt=""><h2>${esc(title)}</h2>${k?`<span class="k">${esc(k)}</span>`:''}</div>
+    <div class="blue"><div class="t">${ic(ico)}${esc(head)}</div>${txt&&txt!==head?`<p>${esc(txt)}</p>`:''}
+    <div class="stats">${stats.map(s=>`<div>${s[0]}${esc(s[1])}</div>`).join('')}</div>${btns}</div>`;
+  }
+}
+function centerOn(x){requestAnimationFrame(()=>{const st=$('#stage');if(st&&st.scrollWidth>st.clientWidth+4)st.scrollTo({left:st.scrollWidth*x/100-st.clientWidth/2,behavior:'smooth'})})}
+function select(sel){
+  SEL=sel;const id=CUR;
+  document.querySelectorAll('[data-sel]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sel===sel)));
+  const c=$('#card');if(c)c.innerHTML=cardFor(id,sel);
+}
+function gallery(kind){
+  if(kind==='ciudades'){
+    const cs=kids('V01');
+    return `<section class="gal"><h1>Ciudades</h1><p>Toca una para ver sus barrios y lo que vais a ver.</p><div class="grid">${cs.map(k=>{const d=daysIn(k);return `<button type="button" class="gc" data-go="${k}"><img src="${th(k)}" alt="" loading="lazy"><div><b>${esc(M[k].n)}</b><small>${esc(dayTxt(d))} · ${esc(dateTxt(d))}</small></div></button>`}).join('')}</div></section>`;
+  }
+  return `<section class="gal"><h1>Barrios</h1><p>Los 26 sitios del viaje, por ciudad.</p>${kids('V01').map(c=>{const bs=kids(c);if(!bs.length)return '';return `<h3>${esc(M[c].n)}<small>${esc(dateTxt(daysIn(c)))}</small></h3><div class="grid">${bs.map(k=>{const d=daysIn(k);return `<button type="button" class="gc" data-go="${k}"><img src="${th(k)}" alt="" loading="lazy"><div><b>${esc(M[k].n)}</b><small>${esc(dayTxt(d))} · ${esc(M[k].s)}</small></div></button>`}).join('')}</div>`}).join('')}</section>`;
+}
+let CUR='V01';
+function render(){
+  let h=decodeURIComponent(location.hash.slice(1))||'V01';
+  const dm=h.match(/^dia-(\d+)$/);
+  if(dm){const cnt={};S.filter(s=>s.d===+dm[1]&&s.m).forEach(s=>{const c=s.m[0]==='B'?M[s.m].p:s.m;cnt[c]=(cnt[c]||0)+1});
+    const best=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0]||'V01';history.replaceState(null,'','#'+best);h=best}
+  const tab=h==='ciudades'||h==='barrios'?h:'mapa';
+  document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-current',String(b.dataset.tab===tab)));
+  if(tab!=='mapa'){$('#app').innerHTML=gallery(tab);scrollTo(0,0);return}
+  CUR=M[h]?h:'V01';
+  $('#app').innerHTML=mapView(CUR);
+  const ds=daysIn(CUR);$('#go3d').href='../'+(ds.length?'#dia-'+ds[0]:'');
+  document.title=M[CUR].n+' · Mapas de Japón';
+  const pl=places(CUR),ks=kids(CUR);
+  select(CUR[0]==='B'&&pl.length?'p0':null);
+  // animación de la ruta
+  document.querySelectorAll('.route path.line').forEach(p=>{try{const L=p.getTotalLength();p.style.setProperty('--len',L);p.style.strokeDasharray=L;p.style.strokeDashoffset=L;p.classList.add('draw')}catch(e){}});
+  const xs=[...pl.map(p=>p.x),...ks.map(k=>M[k].xy[0])];centerOn(xs.length?xs.reduce((a,b)=>a+b,0)/xs.length:50);
+  scrollTo(0,0);
+}
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]');
+  const s=e.target.closest('[data-sel]');
+  if(s&&s.classList.contains('pin')){select(s.dataset.sel);if(innerWidth<=1180){const c=$('#card');c&&c.scrollIntoView({behavior:'smooth',block:'nearest'})}return}
+  if(s&&s.classList.contains('it')&&!g){select(s.dataset.sel);const pin=document.querySelector('.pin[data-sel="'+s.dataset.sel+'"]');if(pin){centerOn(parseFloat(pin.style.left));if(innerWidth<=1180)$('#stage').scrollIntoView({behavior:'smooth',block:'center'})}return}
+  if(g){e.preventDefault();location.hash=g.dataset.go;return}
+});
+document.addEventListener('mouseover',e=>{const b=e.target.closest('.bub');if(b&&SEL!==b.dataset.sel&&innerWidth>1180)select(b.dataset.sel)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const p=M[CUR]&&M[CUR].p;if(p&&location.hash.slice(1)===CUR)location.hash=p}});
+addEventListener('hashchange',render);
+render();
+})();
+</script>
+</body>
+</html>
